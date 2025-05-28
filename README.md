@@ -1,17 +1,18 @@
-# 📌 Projeto Post-It Web App
+# 🌐 Projeto bernard.dev.br — Site Pessoal & Ecossistema Web
 
-> Sistema web serverless para criação e visualização pública de notas Post-It, usando AWS Lambda, DynamoDB, API Gateway, S3 e GitHub Pages.
+> Plataforma web multifuncional para divulgação pessoal, portfólio, pequenos sistemas web (como Post-It público) e outras aplicações desenvolvidas com tecnologias modernas e infraestrutura serverless AWS + GitHub Pages.
 
 ---
 
 ## 🚀 Visão Geral
 
-Este projeto entrega um app simples onde qualquer usuário pode criar uma nota pública (Post-It) e ver todas as outras notas em tempo real. Backend 100% serverless AWS + front-end estático.
+Este repositório reúne o site pessoal bernard.dev.br, que serve como hub para diversos projetos e funcionalidades, incluindo:
 
-O hospedagem foi pensada no Bucket S3 mas por questões de afinidade pessoal, eu preferi deixar no GitHub Pages.
-Segue o link do site no S3:
-- https://bernard-dev-br.s3.sa-east-1.amazonaws.com/index.html
-- https://bernard-dev-br.s3.sa-east-1.amazonaws.com/postit.html
+- Site institucional / currículo / portfólio  
+- Sistemas web simples e serverless, como o app Post-It público  
+- Páginas para projetos pessoais estão no repositório original pois não convém estarem aqui  
+- Integração com AWS Lambda, DynamoDB, API Gateway e S3 para backend
+- Hospedagem front-end estática via GitHub Pages e S3
 
 ---
 
@@ -19,83 +20,90 @@ Segue o link do site no S3:
 
 | Serviço AWS        | Função                                                          |
 |--------------------|----------------------------------------------------------------|
-| **Lambda**         | Processa requisições HTTP (GET/POST), integra com DynamoDB     |
-| **DynamoDB**       | Banco NoSQL para armazenar notas (id, texto, timestamp)        |
-| **API Gateway**    | Roteia chamadas HTTP para Lambda, gerencia CORS                |
-| **S3**             | Hospedagem estática do front-end (HTML, CSS, JS)               |
-| **GitHub Pages**   | Hospedagem alternativa do front-end com deploy automático      |
+| **GitHub Pages**   | Hospedagem principal dos sites estáticos com deploy automático |
+| **AWS S3**         | Backup / hospedagem estática alternativa e arquivos auxiliares |
+| **AWS Lambda**     | Backend serverless para APIs dinâmicas e integrações           |
+| **AWS API Gateway**| Roteamento HTTP para Lambdas com suporte a CORS                |
+| **DynamoDB**       | Banco NoSQL para armazenamento de dados dinâmicos              |
+| **JavaScript/HTML/CSS** | Front-end leve, responsivo e interativo                   |
 
 ---
 
-## 📝 Como Funciona o Sistema Post-It
+## 📝 Principais Funcionalidades
 
-- **POST:** Envia um JSON com o texto da nota para a API Gateway → Lambda → DynamoDB (salva a nota)  
-- **GET:** Requisição para API Gateway → Lambda → DynamoDB (retorna todas as notas)  
-- **Front-end:** Captura texto, envia POST e exibe lista atualizada com GET  
+### Site Pessoal & Portfólio
+- Páginas estáticas com informações profissionais, contatos e projetos  
+- Estrutura simples, fácil de manter e expandir  
+
+### Sistema Post-It Web App (Exemplo de API Serverless)
+- Usuários podem criar notas públicas tipo Post-It  
+- Backend AWS processa, armazena e retorna as notas em tempo real  
+- Front-end faz requisições REST para API Gateway e exibe resultados  
 
 ---
 
-## 🔄 Fluxo das Chamadas
+## 🔄 Fluxo do Sistema Post-It
 
 ```mermaid
 graph LR
-  U[Usuário Front-End] -->|POST /postit-api| API[API Gateway]
-  API --> L[Lambda]
-  L --> DB[DynamoDB - Insert]
+  U[Usuário] -->|POST /postit-api| API[API Gateway]
+  API --> L[AWS Lambda]
+  L --> DB[DynamoDB - Inserir Nota]
 
   U -->|GET /postit-api| API
   API --> L
-  L --> DB[DynamoDB - Scan]
+  L --> DB[DynamoDB - Listar Notas]
   DB --> L
   L --> API
   API --> U
+
 ````
 
-## Segue o código da API:
+## Segue o código do Node.js:
 
-    const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-    const { DynamoDBDocumentClient, PutCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+      const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+      const { DynamoDBDocumentClient, PutCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+      
+      const client = new DynamoDBClient({ region: "sa-east-1" });
+      const dynamo = DynamoDBDocumentClient.from(client);
+      const TABLE_NAME = "bernard-dev-br";
+      
+      exports.handler = async (event) => {
+        const method = event.requestContext?.http?.method || event.httpMethod;
     
-    const client = new DynamoDBClient({ region: "sa-east-1" });
-    const dynamo = DynamoDBDocumentClient.from(client);
-    const TABLE_NAME = "bernard-dev-br";
+      if (method === "POST") {
+        const body = JSON.parse(event.body);
+        const id = Date.now().toString();
     
-    exports.handler = async (event) => {
-      const method = event.requestContext?.http?.method || event.httpMethod;
-  
-    if (method === "POST") {
-      const body = JSON.parse(event.body);
-      const id = Date.now().toString();
-  
-      const item = {
-        id,
-        texto: body.texto || "",
-        dataCriacao: new Date().toISOString(),
-      };
-  
-      await dynamo.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
-  
+        const item = {
+          id,
+          texto: body.texto || "",
+          dataCriacao: new Date().toISOString(),
+        };
+    
+        await dynamo.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
+    
+        return {
+          statusCode: 201,
+          body: JSON.stringify({ message: "Post-it criado", id }),
+        };
+      }
+    
+      if (method === "GET") {
+        const result = await dynamo.send(
+          new ScanCommand({
+            TableName: TABLE_NAME,
+          })
+        );
+    
+        return {
+          statusCode: 200,
+          body: JSON.stringify(result.Items),
+        };
+      }
+    
       return {
-        statusCode: 201,
-        body: JSON.stringify({ message: "Post-it criado", id }),
+        statusCode: 405,
+        body: JSON.stringify({ message: "Método não permitido" }),
       };
-    }
-  
-    if (method === "GET") {
-      const result = await dynamo.send(
-        new ScanCommand({
-          TableName: TABLE_NAME,
-        })
-      );
-  
-      return {
-        statusCode: 200,
-        body: JSON.stringify(result.Items),
-      };
-    }
-  
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ message: "Método não permitido" }),
     };
-  };
