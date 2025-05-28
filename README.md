@@ -14,6 +14,11 @@ Este repositório reúne o site pessoal bernard.dev.br, que serve como hub para 
 - Integração com AWS Lambda, DynamoDB, API Gateway e S3 para backend
 - Hospedagem front-end estática via GitHub Pages e S3
 
+A hospedagem foi pensada no Bucket S3 mas por questões de afinidade pessoal, eu preferi deixar no GitHub Pages.
+Segue o link do site no S3:
+- https://bernard-dev-br.s3.sa-east-1.amazonaws.com/index.html
+- https://bernard-dev-br.s3.sa-east-1.amazonaws.com/postit.html
+
 ---
 
 ## 🏗 Arquitetura & Tecnologias
