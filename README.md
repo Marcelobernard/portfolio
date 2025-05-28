@@ -1,51 +1,119 @@
-# 🗒️ Post-it Público
+# 🌐 Projeto bernard.dev.br — Site Pessoal & Ecossistema Web
+<p align="center">
+  <a href="http://portfolio.bernard.dev.br" target="_blank" style="color:#0366d6; text-decoration:none;">
+    http://portfolio.bernard.dev.br
+  </a>
+</p>
 
-## 📝 Sobre o Projeto
-Olá! Este é um projeto simples e interativo de um mural de post-its públicos. É uma maneira divertida e colaborativa de compartilhar mensagens, ideias ou pensamentos com outras pessoas. Imagine um quadro de avisos digital onde todos podem deixar sua marca!
-
-## ✨ Funcionalidades
-- **Interface Amigável**: Design moderno e responsivo que se adapta a qualquer dispositivo
-- **Limite de Caracteres**: Cada post-it pode ter até 100 caracteres, mantendo as mensagens concisas e objetivas
-- **Contador em Tempo Real**: Acompanhe quantos caracteres você já digitou
-- **Atualização Automática**: Os post-its são atualizados automaticamente quando alguém adiciona uma nova mensagem
-- **Design Responsivo**: Se adapta perfeitamente a desktops, tablets e smartphones
-
-## 🎨 Design
-O projeto utiliza um esquema de cores moderno e elegante:
-- Fundo escuro para melhor contraste
-- Gradiente suave no cabeçalho
-- Efeitos de hover nos post-its
-- Fonte Poppins para melhor legibilidade
-- Ícones do Font Awesome para elementos visuais
-
-## 💻 Tecnologias Utilizadas
-- HTML5
-- CSS3 (com variáveis CSS para fácil personalização)
-- JavaScript (Vanilla)
-- API REST para persistência dos dados
-- Font Awesome para ícones
-- Google Fonts (Poppins)
-
-## 🚀 Como Usar
-1. Acesse a página principal
-2. Digite sua mensagem no campo de texto
-3. Clique em "Enviar" ou pressione Enter
-4. Seu post-it aparecerá instantaneamente no mural!
-
-## ⚠️ Limitações
-- Cada post-it tem limite de 100 caracteres
-- Não é possível editar ou excluir post-its após o envio
-- Requer conexão com a internet para funcionar
-
-## 🎯 Objetivo
-Este projeto foi criado como uma demonstração de habilidades em desenvolvimento web, combinando design moderno com funcionalidades práticas. É uma forma divertida de interagir e compartilhar mensagens com outras pessoas.
-
-## 🔄 Atualizações Futuras
-- Adição de cores personalizadas para os post-its
-- Possibilidade de editar/excluir próprios post-its
-- Sistema de curtidas
-- Filtros e busca de mensagens
+> Plataforma web multifuncional para divulgação pessoal, portfólio, pequenos sistemas web (como Post-It público) e outras aplicações desenvolvidas com tecnologias modernas e infraestrutura serverless AWS + GitHub Pages.
 
 ---
 
-Desenvolvido com ❤️ por MBernard
+## 🚀 Visão Geral
+
+Este repositório reúne o conteúdo relevante do site pessoal bernard.dev.br, que serve como hub para diversos projetos e funcionalidades, incluindo:
+
+- Site institucional / currículo / portfólio  
+- Sistemas web simples e serverless, como o app Post-It público  
+- Páginas para projetos pessoais estão no repositório original pois não convém estarem aqui  
+- Integração com AWS Lambda, DynamoDB, API Gateway e S3 para backend
+- Hospedagem front-end estática via GitHub Pages e S3
+
+A hospedagem foi pensada no Bucket S3 mas por questões de afinidade pessoal, eu preferi deixar no GitHub Pages.
+Segue o link do site no S3:
+- https://bernard-dev-br.s3.sa-east-1.amazonaws.com/index.html
+- https://bernard-dev-br.s3.sa-east-1.amazonaws.com/postit.html
+
+---
+
+## 🏗 Arquitetura & Tecnologias
+
+| Serviço AWS        | Função                                                          |
+|--------------------|----------------------------------------------------------------|
+| **GitHub Pages**   | Hospedagem principal dos sites estáticos com deploy automático |
+| **AWS S3**         | Backup / hospedagem estática alternativa e arquivos auxiliares |
+| **AWS Lambda**     | Backend serverless para APIs dinâmicas e integrações           |
+| **AWS API Gateway**| Roteamento HTTP para Lambdas com suporte a CORS                |
+| **DynamoDB**       | Banco NoSQL para armazenamento de dados dinâmicos              |
+| **JavaScript/HTML/CSS** | Front-end leve, responsivo e interativo                   |
+
+---
+
+## 📝 Principais Funcionalidades
+
+### Site Pessoal & Portfólio
+- Páginas estáticas com informações profissionais, contatos e projetos  
+- Estrutura simples, fácil de manter e expandir  
+
+### Sistema Post-It Web App (Exemplo de API Serverless)
+- Usuários podem criar notas públicas tipo Post-It  
+- Backend AWS processa, armazena e retorna as notas em tempo real  
+- Front-end faz requisições REST para API Gateway e exibe resultados  
+
+---
+
+## 🔄 Fluxo do Sistema Post-It
+
+```mermaid
+graph LR
+  U[Usuário] -->|POST /postit-api| API[API Gateway]
+  API --> L[AWS Lambda]
+  L --> DB[DynamoDB - Inserir Nota]
+
+  U -->|GET /postit-api| API
+  API --> L
+  L --> DB[DynamoDB - Listar Notas]
+  DB --> L
+  L --> API
+  API --> U
+
+````
+
+## Segue o código do Node.js:
+
+      const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+      const { DynamoDBDocumentClient, PutCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+      
+      const client = new DynamoDBClient({ region: "sa-east-1" });
+      const dynamo = DynamoDBDocumentClient.from(client);
+      const TABLE_NAME = "bernard-dev-br";
+      
+      exports.handler = async (event) => {
+        const method = event.requestContext?.http?.method || event.httpMethod;
+    
+      if (method === "POST") {
+        const body = JSON.parse(event.body);
+        const id = Date.now().toString();
+    
+        const item = {
+          id,
+          texto: body.texto || "",
+          dataCriacao: new Date().toISOString(),
+        };
+    
+        await dynamo.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
+    
+        return {
+          statusCode: 201,
+          body: JSON.stringify({ message: "Post-it criado", id }),
+        };
+      }
+    
+      if (method === "GET") {
+        const result = await dynamo.send(
+          new ScanCommand({
+            TableName: TABLE_NAME,
+          })
+        );
+    
+        return {
+          statusCode: 200,
+          body: JSON.stringify(result.Items),
+        };
+      }
+    
+      return {
+        statusCode: 405,
+        body: JSON.stringify({ message: "Método não permitido" }),
+      };
+    };
