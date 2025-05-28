@@ -1,4 +1,9 @@
 # 🌐 Projeto bernard.dev.br — Site Pessoal & Ecossistema Web
+<p align="center">
+  <a href="http://portfolio.bernard.dev.br" target="_blank" style="color:#0366d6; text-decoration:none;">
+    http://portfolio.bernard.dev.br
+  </a>
+</p>
 
 > Plataforma web multifuncional para divulgação pessoal, portfólio, pequenos sistemas web (como Post-It público) e outras aplicações desenvolvidas com tecnologias modernas e infraestrutura serverless AWS + GitHub Pages.
 
