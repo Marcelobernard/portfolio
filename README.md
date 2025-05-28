@@ -11,7 +11,7 @@
 
 ## 🚀 Visão Geral
 
-Este repositório reúne o site pessoal bernard.dev.br, que serve como hub para diversos projetos e funcionalidades, incluindo:
+Este repositório reúne o conteúdo relevante do site pessoal bernard.dev.br, que serve como hub para diversos projetos e funcionalidades, incluindo:
 
 - Site institucional / currículo / portfólio  
 - Sistemas web simples e serverless, como o app Post-It público  
