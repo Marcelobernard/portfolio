@@ -18,11 +18,9 @@
         --text-color: #ecf0f1;
         --background-color: #1a1a1a;
     }
-
     * {
         font-family: 'Poppins', sans-serif;
     }
-
     body {
         margin: 0;
         padding: 0;
@@ -31,55 +29,45 @@
         line-height: 1.6;
         font-weight: 300;
     }
-
     h1, h2, h3, h4, h5, h6 {
         font-weight: 600;
     }
-
     .section-title {
         font-weight: 500;
     }
-
     .project-title {
         font-weight: 500;
     }
-
     .skill-card h3 {
         font-weight: 500;
     }
-
     .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 2rem;
     }
-
     header {
         text-align: center;
         padding: 4rem 0;
         background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     }
-
     h1 {
         font-size: 3.5em;
         margin: 0;
         color: var(--text-color);
         text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
-
     .subtitle {
         font-size: 1.5em;
         margin-top: 1rem;
         color: rgba(255,255,255,0.9);
     }
-
     .section {
         background-color: rgba(255,255,255,0.05);
         border-radius: 10px;
         padding: 2rem;
         margin: 2rem 0;
     }
-
     .section-title {
         color: var(--secondary-color);
         font-size: 1.8em;
@@ -87,20 +75,17 @@
         border-bottom: 2px solid var(--secondary-color);
         padding-bottom: 0.5rem;
     }
-
     .skills-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 2rem;
     }
-
     .projects-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 2rem;
         margin-top: 2rem;
     }
-
     .project-card {
         background-color: rgba(255,255,255,0.1);
         border-radius: 10px;
@@ -113,40 +98,33 @@
         width: 100%;
         border: 1px solid rgba(255,255,255,0.1);
     }
-
     .project-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         border-color: var(--secondary-color);
     }
-
     .project-content {
         padding: 2rem;
         text-align: center;
     }
-
     .project-icon {
         font-size: 2.5rem;
         color: var(--secondary-color);
         margin-bottom: 1rem;
     }
-
     .project-title {
         font-size: 1.2em;
         margin: 0.5rem 0;
         color: var(--text-color);
     }
-
     .project-description {
         font-size: 0.9em;
         color: rgba(255,255,255,0.7);
         margin: 0;
     }
-
     body.light-mode .project-description {
         color: rgba(0,0,0,0.7);
     }
-
     @media only screen and (max-width: 768px) {
         .project-content {
             padding: 1.5rem;
@@ -156,42 +134,35 @@
             font-size: 2rem;
         }
     }
-
     .skill-card {
         background-color: rgba(255,255,255,0.1);
         padding: 1.5rem;
         border-radius: 10px;
         transition: transform 0.3s ease;
     }
-
     .skill-card:hover {
         transform: translateY(-5px);
     }
-
     .skill-header {
         display: flex;
         align-items: center;
         gap: 1rem;
         margin-bottom: 1.5rem;
     }
-
     .skill-icon {
         font-size: 2rem;
         color: var(--secondary-color);
     }
-
     .skill-title {
         margin: 0;
         font-size: 1.4em;
         color: var(--secondary-color);
     }
-
     .skill-list {
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
     }
-
     .skill-item {
         display: flex;
         align-items: center;
@@ -201,50 +172,41 @@
         border-radius: 20px;
         transition: all 0.3s ease;
     }
-
     .skill-item:hover {
         background-color: rgba(255,255,255,0.1);
         transform: translateY(-2px);
     }
-
     .skill-item i {
         color: var(--secondary-color);
     }
-
     .skill-item span {
         font-size: 0.9em;
     }
-
     .contact-info {
         display: flex;
         justify-content: center;
         gap: 2rem;
         margin-top: 2rem;
     }
-
     .contact-item {
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
-
     .contact-item a {
         color: var(--text-color);
         text-decoration: none;
         transition: color 0.3s ease;
     }
-
     .contact-item a:hover {
         color: var(--secondary-color);
     }
-
     .social-links {
         display: flex;
         justify-content: center;
         gap: 1.5rem;
         margin-top: 2rem;
     }
-
     .social-link {
         color: var(--text-color);
         font-size: 1.5rem;
@@ -254,87 +216,71 @@
         align-items: center;
         gap: 0.5rem;
     }
-
     .social-link:hover {
         color: var(--secondary-color);
     }
-
     .social-link span {
         font-size: 1rem;
     }
-
     .about-content {
         display: flex;
         flex-direction: column;
         gap: 2rem;
     }
-
     .about-text {
         margin-bottom: 10px;
     }
-
     @media only screen and (max-width: 768px) {
         .container {
             padding: 1rem;
         }
-
         h1 {
             font-size: 2.5em;
         }
-
         .subtitle {
             font-size: 1.2em;
         }
-
         .contact-info {
             flex-direction: column;
             align-items: center;
             gap: 1rem;
         }
-
         .project-image-container {
             height: 195px;
         }
     }
-
     footer {
         background-color: rgba(255,255,255,0.05);
         border-radius: 10px;
         padding: 2rem 0;
         margin-top: 4rem;
     }
-
     .footer-content {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
         align-items: start;
     }
-
     .footer-section {
         display: flex;
         flex-direction: column;
         gap: 1rem;
     }
-
     .footer-section h3 {
         color: var(--secondary-color);
         font-size: 1.2em;
         margin-bottom: 0.5rem;
     }
-
     .footer-section p {
         margin: 0;
         font-size: 0.9em;
         color: rgba(255,255,255,0.8);
     }
-
     .footer-contact {
         display: flex;
         flex-direction: column;
         gap: 0.8rem;
     }
-
     .footer-contact a {
         color: var(--text-color);
         text-decoration: none;
@@ -343,26 +289,21 @@
         gap: 0.5rem;
         transition: color 0.3s ease;
     }
-
     .footer-contact a:hover {
         color: var(--secondary-color);
     }
-
     .footer-social {
         display: flex;
         gap: 1rem;
     }
-
     .footer-social a {
         color: var(--text-color);
         font-size: 1.5rem;
         transition: color 0.3s ease;
     }
-
     .footer-social a:hover {
         color: var(--secondary-color);
     }
-
     .footer-bottom {
         text-align: center;
         margin-top: 2rem;
@@ -371,22 +312,18 @@
         font-size: 0.9em;
         color: rgba(255,255,255,0.6);
     }
-
     @media only screen and (max-width: 768px) {
         .footer-content {
             grid-template-columns: 1fr;
             text-align: center;
         }
-
         .footer-contact a {
             justify-content: center;
         }
-
         .footer-social {
             justify-content: center;
         }
     }
-
     .controls-bar {
         background-color: rgba(255,255,255,0.05);
         border-radius: 10px;
@@ -397,7 +334,6 @@
         gap: 1rem;
         flex-wrap: wrap;
     }
-
     .control-button {
         background-color: var(--secondary-color);
         color: var(--text-color);
@@ -411,31 +347,25 @@
         align-items: center;
         gap: 0.5rem;
     }
-
     .control-button:hover {
         transform: translateY(-2px);
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-
     .control-button i {
         font-size: 1.2em;
     }
-
     .color-picker {
         display: none;
     }
-
     .shake {
         animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
     }
-
     @keyframes shake {
         10%, 90% { transform: translate3d(-1px, 0, 0); }
         20%, 80% { transform: translate3d(2px, 0, 0); }
         30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
         40%, 60% { transform: translate3d(4px, 0, 0); }
     }
-
     body.light-mode {
         --primary-color: #3498db;
         --secondary-color: #2ecc71;
@@ -443,7 +373,6 @@
         --text-color: #2c3e50;
         --background-color: #f5f6fa;
     }
-
     body.light-mode .section,
     body.light-mode .skill-card,
     body.light-mode .project-card,
@@ -451,57 +380,44 @@
     body.light-mode footer {
         background-color: rgba(0,0,0,0.05);
     }
-
     body.light-mode .skill-item {
         background-color: rgba(0,0,0,0.1);
     }
-
     body.light-mode .footer-section p,
     body.light-mode .footer-contact a,
     body.light-mode .footer-social a {
         color: var(--text-color);
     }
-
     body.light-mode .footer-bottom {
         color: var(--text-color);
     }
-
     body.light-mode .footer-bottom p {
         color: var(--text-color);
     }
-
     .broken-site {
         animation: glitch 0.3s infinite;
     }
-
     .broken-site * {
         position: relative;
     }
-
     .broken-site *:nth-child(odd) {
         transform: translate(-2px, 2px);
     }
-
     .broken-site *:nth-child(even) {
         transform: translate(2px, -2px);
     }
-
     .broken-site .section {
         transform: rotate(random(-5deg, 5deg));
     }
-
     .broken-site .skill-card {
         transform: scale(0.9) rotate(random(-10deg, 10deg));
     }
-
     .broken-site .project-card {
         transform: translate(random(-20px, 20px), random(-20px, 20px));
     }
-
     .broken-site .footer-section {
         transform: translateX(random(-50px, 50px));
     }
-
     @keyframes glitch {
         0% {
             transform: translate(0);
@@ -522,7 +438,6 @@
             transform: translate(0);
         }
     }
-
     .modal {
         display: none;
         position: fixed;
@@ -535,7 +450,6 @@
         justify-content: center;
         align-items: center;
     }
-
     .modal-content {
         background-color: var(--background-color);
         padding: 2rem;
@@ -544,14 +458,12 @@
         max-width: 400px;
         width: 90%;
     }
-
     .modal-buttons {
         display: flex;
         gap: 1rem;
         justify-content: center;
         margin-top: 1.5rem;
     }
-
     .modal-button {
         padding: 0.5rem 1rem;
         border: none;
@@ -560,22 +472,18 @@
         font-family: 'Poppins', sans-serif;
         transition: all 0.3s ease;
     }
-
     .modal-button.confirm {
         background-color: var(--accent-color);
         color: var(--text-color);
     }
-
     .modal-button.cancel {
         background-color: var(--secondary-color);
         color: var(--text-color);
     }
-
     .modal-button:hover {
         transform: translateY(-2px);
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-
     .postit-button {
         display: block;
         margin: 3.4rem auto 0.1rem;
@@ -592,7 +500,6 @@
         text-align: center;
         max-width: 250px;
     }
-
     .postit-description {
         text-align: center;
         color: var(--secondary-color);
@@ -601,18 +508,15 @@
         opacity: 0.8;
         max-width: 400px;
     }
-
     .postit-button:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 20px rgba(13, 165, 5, 0.4);
         background-color: transparent;
     }
-
     .postit-button i {
         margin-right: 5px;
         font-size: 1em;
     }
-
     .login-button {
         display: block;
         margin: 2rem auto 0.1rem;
@@ -629,13 +533,11 @@
         text-align: center;
         max-width: 250px;
     }
-
     .login-button:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 20px rgba(13, 165, 5, 0.4);
         background-color: transparent;
     }
-
     .login-button i {
         margin-right: 5px;
         font-size: 1em;
@@ -647,7 +549,6 @@
         <h1>MBernard</h1>
         <div class="subtitle">Desenvolvedor Full Stack</div>
     </header>
-
     <div class="controls-bar">
         <button class="control-button" onclick="toggleColorPicker()">
             <i class="fas fa-palette"></i>
@@ -671,13 +572,11 @@
             Quebrar Site
         </button>
     </div>
-
     <a href="postit.html" class="postit-button">
         <i class="fas fa-sticky-note"></i>
         Post-it Público
     </a>
     <p class="postit-description">Clique aqui para entrar na seção de post-it, onde é possível deixar um comentário público</p>
-
     <div class="modal" id="breakModal">
         <div class="modal-content">
             <h3>⚠️ Aviso ⚠️</h3>
@@ -688,7 +587,6 @@
             </div>
         </div>
     </div>
-
     <main class="container">
         <section class="section">
             <h2 class="section-title">Sobre Mim</h2>
@@ -710,7 +608,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section">
             <h2 class="section-title">Cloud Computing</h2>
             <div class="about-content">
@@ -733,7 +630,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section">
             <h2 class="section-title">Script</h2>
             <div class="about-content">
@@ -756,7 +652,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section">
             <h2 class="section-title">Habilidades Técnicas</h2>
             <div class="skills-grid">
@@ -850,7 +745,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section">
             <h2 class="section-title">Projetos</h2>
             <div class="projects-grid">
@@ -885,7 +779,6 @@
             </div>
         </section>
     </main>
-
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -927,44 +820,36 @@
             </div>
         </div>
     </footer>
-
     <script>
         function toggleColorPicker() {
             const colorPicker = document.getElementById('colorPicker');
             colorPicker.style.display = colorPicker.style.display === 'block' ? 'none' : 'block';
         }
-
         function changeColor(color) {
             document.documentElement.style.setProperty('--secondary-color', color);
             document.getElementById('colorPicker').style.display = 'none';
         }
-
         function resetColor() {
             document.documentElement.style.setProperty('--secondary-color', '#0aa069');
         }
-
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const themeButton = document.querySelector('.control-button:nth-child(4) i');
             themeButton.classList.toggle('fa-moon');
             themeButton.classList.toggle('fa-sun');
         }
-
         function shakeSite() {
             document.body.classList.add('shake');
             setTimeout(() => {
                 document.body.classList.remove('shake');
             }, 500);
         }
-
         function showBreakConfirmation() {
             document.getElementById('breakModal').style.display = 'flex';
         }
-
         function hideBreakConfirmation() {
             document.getElementById('breakModal').style.display = 'none';
         }
-
         function breakSite() {
             document.body.classList.add('broken-site');
             hideBreakConfirmation();

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ptbr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MBernard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #0aa069;
+            --accent-color: #e74c3c;
+            --text-color: #ecf0f1;
+            --background-color: #1a1a1a;
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background-color: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-title {
+            font-size: 2em;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+        }
+
+        .login-description {
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: var(--secondary-color);
+        }
+
+        .user-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .user-info.active {
+            display: block;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+        }
+
+        .user-name {
+            font-size: 1.2em;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-email {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1 class="login-title">Login</h1>
+        <p class="login-description">Faça login com sua conta Google para acessar recursos exclusivos</p>
+        
+        <div id="g_id_onload"
+             data-client_id="SEU_CLIENT_ID_AQUI"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="filled_black"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
+
+        <div class="user-info" id="userInfo">
+            <img src="" alt="Avatar" class="user-avatar" id="userAvatar">
+            <h2 class="user-name" id="userName"></h2>
+            <p class="user-email" id="userEmail"></p>
+        </div>
+
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Voltar para a página inicial
+        </a>
+    </div>
+
+    <script>
+        function handleCredentialResponse(response) {
+            // Decodifica o token JWT
+            const responsePayload = jwt_decode(response.credential);
+            
+            // Atualiza a interface com as informações do usuário
+            document.getElementById('userInfo').classList.add('active');
+            document.getElementById('userAvatar').src = responsePayload.picture;
+            document.getElementById('userName').textContent = responsePayload.name;
+            document.getElementById('userEmail').textContent = responsePayload.email;
+
+            // Aqui você pode enviar as informações para seu backend
+            console.log("ID: " + responsePayload.sub);
+            console.log("Nome: " + responsePayload.name);
+            console.log("Email: " + responsePayload.email);
+            console.log("Foto: " + responsePayload.picture);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+</body>
+</html> 
