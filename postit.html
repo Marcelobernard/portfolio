@@ -86,6 +86,40 @@
       display: none;
     }
 
+    /* Estilos para a área de post-it que exige login */
+    .postit-area {
+      margin: 2rem auto;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    .login-required-message {
+      font-size: 1.2rem;
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+    }
+
+    .login-required-message a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .login-required-message a:hover {
+      color: var(--secondary-color);
+    }
+
+    /* Oculta o formulário por padrão */
+    #postit-form {
+      display: none; /* Oculta o formulário por padrão */
+      gap: 10px;
+      margin: 0 auto; /* Ajuste de margem já que está dentro de postit-area */
+      max-width: 800px; /* Ajuste de largura já que está dentro de postit-area */
+      position: relative;
+      align-items: center;
+    }
+
     /* Formulário de entrada */
     form {
       display: flex;
@@ -182,45 +216,63 @@
       transition: transform 0.3s ease;
       aspect-ratio: 1;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: space-between;
       text-align: center;
       word-break: break-word;
+      font-size: 0.9rem;
     }
 
-    /* Efeito hover no post-it */
-    .postit:hover {
-      transform: translateY(-2px);
+    .postit-content {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .postit-author {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .postit-author img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
     }
 
     /* Botão de retorno */
     .return-button {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.6rem 1.0rem;
-        background-color: var(--secondary-color);
-        color: var(--text-color);
-        text-decoration: none;
-        border-radius: 50px;
-        font-weight: 500;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(13, 165, 5, 0.3);
-        border: 2px solid var(--secondary-color);
-        text-align: center;
-        margin-right: 1rem;
+      display: inline-flex;
+      margin-right: auto;
     }
 
-    /* Efeito hover no botão de retorno */
-    .return-button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(13, 165, 5, 0.4);
-        background-color: transparent;
-    }
+    /* Responsividade para o formulário */
+    @media (max-width: 600px) {
+      form {
+        flex-direction: column;
+        align-items: stretch;
+      }
 
-    /* Ícone do botão de retorno */
-    .return-button i {
-        margin-right: 6px;
+      .input-wrapper {
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .return-button {
+        margin-right: 0;
+        margin-bottom: 1rem;
+        align-self: flex-start;
+      }
     }
   </style>
 </head>
@@ -233,33 +285,42 @@
 
   <!-- Container principal -->
   <div class="container">
-    <!-- Formulário de entrada -->
-    <form id="postit-form">
-      <!-- Botão de retorno -->
-      <a href="index.html" class="return-button">
-        <i class="fas fa-home"></i>
-        Voltar
-      </a>
-      <!-- Wrapper do input -->
-      <div class="input-wrapper">
-        <input type="text" id="texto" placeholder="Escreva seu post-it aqui..." maxlength="100" required />
-        <span class="char-count">0/100</span>
+    <div class="postit-area">
+      <div id="loginMessage" class="login-required-message" style="display: none;">
+        Você precisa estar logado para publicar um post-it. <a href="login.html">Faça Login com Google</a>
       </div>
-      <button type="submit">Enviar</button>
-    </form>
+      <!-- Formulário de entrada -->
+      <form id="postit-form">
+        <!-- Botão de retorno -->
+        <a href="index.html" class="return-button">
+          <i class="fas fa-home"></i>
+          Voltar
+        </a>
+        <!-- Wrapper do input -->
+        <div class="input-wrapper">
+          <input type="text" id="texto" placeholder="Escreva seu post-it aqui..." maxlength="100" required />
+          <span class="char-count">0/100</span>
+        </div>
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
 
     <!-- Container dos post-its -->
     <div id="postits"></div>
   </div>
 
   <script>
-    // URL da API
+    // URL da API - **ATENÇÃO: Você precisará atualizar esta URL para a API que salva dados do usuário**
+    // A API atual (5fyex1o1ec...) parece ser apenas para texto.
+    // Para incluir nome e foto, você precisará de uma nova API ou modificar a existente.
     const API_URL = "https://5fyex1o1ec.execute-api.sa-east-1.amazonaws.com/postit-api";
     const MAX_CHARS = 100;
 
     // Configuração do contador de caracteres
     const textoInput = document.getElementById('texto');
     const charCount = document.querySelector('.char-count');
+    const postitForm = document.getElementById('postit-form');
+    const loginMessage = document.getElementById('loginMessage');
 
     // Listener para atualizar o contador de caracteres
     textoInput.addEventListener('input', () => {
@@ -270,48 +331,100 @@
     // Função para carregar os post-its
     async function carregarPostits() {
       try {
+        // **ATENÇÃO: Esta API (5fyex1o1ec...) só retorna o texto.**
+        // Para exibir nome e foto, sua API precisará retornar esses dados.
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error("Erro ao buscar post-its");
-        const postits = await res.json();
+        const postits = await res.json(); // Supondo que cada post-it no array tenha { texto, name, picture }
         const container = document.getElementById('postits');
         container.innerHTML = '';
-        postits.forEach(p => {
+        // Inverte a ordem para mostrar os mais recentes primeiro (opcional)
+        postits.reverse().forEach(p => {
           const div = document.createElement('div');
           div.className = 'postit';
-          div.textContent = p.texto;
+          // Adiciona o conteúdo e as informações do autor
+          div.innerHTML = `
+            <div class="postit-content">
+                <p>${p.texto}</p>
+            </div>
+            <div class="postit-author">
+                <img src="${p.picture}" alt="${p.name}" />
+                <span>${p.name}</span>
+            </div>
+          `;
           container.appendChild(div);
         });
       } catch (e) {
-        alert(e.message);
+        console.error("Erro ao carregar post-its:", e);
+        // alert("Não foi possível carregar os post-its.");
+      }
+    }
+
+    // Função para verificar o estado do login e mostrar/ocultar o formulário
+    function checkLoginState() {
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+        postitForm.style.display = 'flex'; // Mostra o formulário
+        loginMessage.style.display = 'none'; // Oculta a mensagem de login
+      } else {
+        postitForm.style.display = 'none'; // Oculta o formulário
+        loginMessage.style.display = 'block'; // Mostra a mensagem de login
       }
     }
 
     // Listener do formulário de envio
     document.getElementById('postit-form').addEventListener('submit', async e => {
       e.preventDefault();
+
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        alert("Você precisa estar logado para publicar um post-it.");
+        return; // Interrompe a submissão se não estiver logado
+      }
+
+      const user = JSON.parse(userData);
       const texto = document.getElementById('texto').value.trim();
+
       if (!texto) return alert("Digite algo.");
       if (texto.length > MAX_CHARS) return alert(`O texto não pode ter mais que ${MAX_CHARS} caracteres.`);
 
       try {
-        const res = await fetch(API_URL, {
+        // **ATENÇÃO: Adapte a URL e o corpo da requisição para sua nova API**
+        // Esta requisição precisa enviar { texto, name, picture, email }
+        const res = await fetch(API_URL, { // Altere API_URL para a URL da sua nova API
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ texto })
+          body: JSON.stringify({
+            texto: texto,
+            name: user.name,
+            picture: user.picture,
+            email: user.email // É bom enviar o email para identificação única na API/BD
+          })
         });
 
         if (!res.ok) throw new Error("Erro ao criar post-it");
 
         document.getElementById('texto').value = '';
         charCount.textContent = '0/100';
+        // Recarrega os post-its APENAS após o envio bem-sucedido
         carregarPostits();
       } catch (e) {
-        alert(e.message);
+        console.error("Erro ao enviar post-it:", e);
+        alert("Não foi possível publicar o post-it. Tente novamente.");
       }
     });
 
     // Carrega os post-its ao iniciar a página
     carregarPostits();
+    // Verifica o estado do login ao carregar a página
+    checkLoginState();
+
+    // Adiciona um listener para mudanças no localStorage (útil se o usuário abrir postit.html em outra aba)
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'userData') {
+        checkLoginState(); // Re-verifica o estado do login se os dados do usuário mudarem
+      }
+    });
   </script>
 </body>
 </html>
