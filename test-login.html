@@ -156,17 +156,16 @@
             // Decodifica o token JWT
             const responsePayload = jwt_decode(response.credential);
             
-            // Atualiza a interface com as informações do usuário
-            document.getElementById('userInfo').classList.add('active');
-            document.getElementById('userAvatar').src = responsePayload.picture;
-            document.getElementById('userName').textContent = responsePayload.name;
-            document.getElementById('userEmail').textContent = responsePayload.email;
-
-            // Aqui você pode enviar as informações para seu backend
-            console.log("ID: " + responsePayload.sub);
-            console.log("Nome: " + responsePayload.name);
-            console.log("Email: " + responsePayload.email);
-            console.log("Foto: " + responsePayload.picture);
+            // Salva os dados do usuário no localStorage
+            const userData = {
+                name: responsePayload.name,
+                email: responsePayload.email,
+                picture: responsePayload.picture
+            };
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Redireciona para a página inicial
+            window.location.href = 'index.html';
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>

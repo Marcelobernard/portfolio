@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -28,6 +29,7 @@
         body {
             background-color: var(--background-color);
             color: var(--text-color);
+            line-height: 1.6;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -35,31 +37,17 @@
             justify-content: center;
         }
 
-        .login-container {
-            background-color: rgba(255,255,255,0.05);
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
+        .container {
             max-width: 400px;
             width: 90%;
-        }
-
-        .login-title {
-            font-size: 2em;
-            margin-bottom: 1.5rem;
-            color: var(--secondary-color);
-        }
-
-        .login-description {
-            margin-bottom: 2rem;
-            color: rgba(255,255,255,0.8);
+            text-align: center;
         }
 
         .back-button {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-top: 1rem;
+            margin-bottom: 2rem;
             color: var(--text-color);
             text-decoration: none;
             transition: color 0.3s ease;
@@ -69,88 +57,210 @@
             color: var(--secondary-color);
         }
 
-        .user-info {
+        h1 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            font-size: 2.5em;
+        }
+
+        .login-card {
+            background-color: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .login-card p {
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .login-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(10, 160, 105, 0.3);
+        }
+
+        .login-button i {
+            font-size: 1.2em;
+        }
+
+        .login-info {
             margin-top: 2rem;
             padding: 1rem;
-            background-color: rgba(255,255,255,0.1);
-            border-radius: 8px;
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 5px;
             display: none;
         }
 
-        .user-info.active {
+        .login-info.active {
             display: block;
         }
 
-        .user-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             margin-bottom: 1rem;
         }
 
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            text-align: left;
+        }
+
         .user-name {
-            font-size: 1.2em;
-            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary-color);
         }
 
         .user-email {
-            color: rgba(255,255,255,0.8);
             font-size: 0.9em;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .logout-button {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem auto 0;
+        }
+
+        .logout-button:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+
+        .loading {
+            display: none;
+            margin: 1rem 0;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1 class="login-title">Login</h1>
-        <p class="login-description">Faça login com sua conta Google para acessar recursos exclusivos</p>
-        
-        <div id="g_id_onload"
-             data-client_id="SEU_CLIENT_ID_AQUI"
-             data-context="signin"
-             data-ux_mode="popup"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
-
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="rectangular"
-             data-theme="filled_black"
-             data-text="signin_with"
-             data-size="large"
-             data-logo_alignment="left">
-        </div>
-
-        <div class="user-info" id="userInfo">
-            <img src="" alt="Avatar" class="user-avatar" id="userAvatar">
-            <h2 class="user-name" id="userName"></h2>
-            <p class="user-email" id="userEmail"></p>
-        </div>
-
+    <div class="container">
         <a href="index.html" class="back-button">
             <i class="fas fa-arrow-left"></i>
             Voltar para a página inicial
         </a>
+
+        <h1>Login</h1>
+
+        <div class="login-card">
+            <p>Entre com sua conta Google para acessar recursos exclusivos do site.</p>
+            
+            <div id="g_id_onload"
+                data-client_id="220111594605-p3bo17d7udf40sfuvvi112ol6t7etgrq.apps.googleusercontent.com"
+                data-callback="handleCredentialResponse">
+            </div>
+            <div class="g_id_signin" data-type="standard"></div>
+
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <div class="login-info" id="loginInfo">
+                <div class="user-info">
+                    <img src="" alt="Avatar" class="user-avatar" id="userAvatar">
+                    <div class="user-details">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-email" id="userEmail"></div>
+                    </div>
+                </div>
+                <button class="logout-button" onclick="handleSignOut()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sair
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
         function handleCredentialResponse(response) {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
             // Decodifica o token JWT
             const responsePayload = jwt_decode(response.credential);
             
-            // Atualiza a interface com as informações do usuário
-            document.getElementById('userInfo').classList.add('active');
-            document.getElementById('userAvatar').src = responsePayload.picture;
-            document.getElementById('userName').textContent = responsePayload.name;
-            document.getElementById('userEmail').textContent = responsePayload.email;
-
-            // Aqui você pode enviar as informações para seu backend
-            console.log("ID: " + responsePayload.sub);
-            console.log("Nome: " + responsePayload.name);
-            console.log("Email: " + responsePayload.email);
-            console.log("Foto: " + responsePayload.picture);
+            // Salva os dados do usuário no localStorage
+            const userData = {
+                name: responsePayload.name,
+                email: responsePayload.email,
+                picture: responsePayload.picture
+            };
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Redireciona para a página inicial após um breve delay
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
         }
+
+        function handleSignOut() {
+            localStorage.removeItem('userData');
+            window.location.href = 'index.html';
+        }
+
+        // Verifica se o usuário já está logado
+        window.addEventListener('load', () => {
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+                const user = JSON.parse(userData);
+                document.getElementById('loginInfo').classList.add('active');
+                document.getElementById('userAvatar').src = user.picture;
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userEmail').textContent = user.email;
+            }
+        });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 </body>
 </html> 

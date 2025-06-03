@@ -640,6 +640,116 @@
         margin-right: 5px;
         font-size: 1em;
     }
+
+    .buttons-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        max-width: 600px;
+        margin: 3.4rem auto 0.1rem;
+        padding: 0 1rem;
+    }
+
+    .grid-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(63, 231, 60, 0.3);
+        border: 2px solid var(--secondary-color);
+        text-align: center;
+        min-height: 120px;
+    }
+
+    .grid-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(13, 165, 5, 0.4);
+        background-color: transparent;
+    }
+
+    .grid-button i {
+        font-size: 2em;
+        margin-bottom: 0.5rem;
+    }
+
+    .grid-button span {
+        font-size: 1.1em;
+    }
+
+    .welcome-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(63, 231, 60, 0.3);
+        border: 2px solid var(--secondary-color);
+        text-align: center;
+        min-height: 120px;
+        gap: 1rem;
+    }
+
+    .welcome-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(13, 165, 5, 0.4);
+        background-color: transparent;
+    }
+
+    .welcome-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .welcome-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .welcome-name {
+        font-size: 1.1em;
+        text-align: left;
+    }
+
+    .welcome-logout {
+        background: none;
+        border: none;
+        color: var(--accent-color);
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .welcome-logout:hover {
+        background-color: rgba(231, 76, 60, 0.1);
+    }
+
+    @media only screen and (max-width: 768px) {
+        .buttons-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 </head>
 <body>
@@ -672,11 +782,15 @@
         </button>
     </div>
 
-    <a href="postit.html" class="postit-button">
-        <i class="fas fa-sticky-note"></i>
-        Post-it Público
-    </a>
-    <p class="postit-description">Clique aqui para entrar na seção de post-it, onde é possível deixar um comentário público</p>
+    <div class="buttons-grid">
+        <a href="postit.html" class="grid-button">
+            <i class="fas fa-sticky-note"></i>
+            <span>Post-it Público</span>
+        </a>
+        <div id="loginSection">
+            <!-- O conteúdo será preenchido dinamicamente pelo JavaScript -->
+        </div>
+    </div>
 
     <div class="modal" id="breakModal">
         <div class="modal-content">
@@ -977,6 +1091,44 @@
                 });
             }, 100);
         }
+
+        // Função para verificar o estado do login
+        function checkLoginState() {
+            const loginSection = document.getElementById('loginSection');
+            const userData = localStorage.getItem('userData');
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                loginSection.innerHTML = `
+                    <div class="welcome-card">
+                        <div class="welcome-header">
+                            <img src="${user.picture}" alt="Avatar" class="welcome-avatar">
+                            <span class="welcome-name">Bem-vindo, ${user.name}</span>
+                        </div>
+                        <button class="welcome-logout" onclick="handleSignOut()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Sair
+                        </button>
+                    </div>
+                `;
+            } else {
+                loginSection.innerHTML = `
+                    <a href="login.html" class="grid-button">
+                        <i class="fab fa-google"></i>
+                        <span>Entrar com Google</span>
+                    </a>
+                `;
+            }
+        }
+
+        // Função para fazer logout
+        function handleSignOut() {
+            localStorage.removeItem('userData');
+            checkLoginState();
+        }
+
+        // Verifica o estado do login quando a página carrega
+        window.addEventListener('load', checkLoginState);
     </script>
 </body>
 </html>
