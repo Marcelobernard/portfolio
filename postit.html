@@ -250,7 +250,39 @@
     /* Botão de retorno */
     .return-button {
       display: inline-flex;
+      align-items: center;
+      padding: 0.6rem 1.0rem;
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(13, 165, 5, 0.3);
+      border: 2px solid var(--secondary-color);
+      text-align: center;
       margin-right: auto;
+    }
+
+    .return-button i,
+    .return-button span {
+      color: var(--text-color);
+    }
+
+    .return-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(13, 165, 5, 0.4);
+      background-color: transparent;
+    }
+
+    .return-button:hover i,
+    .return-button:hover span {
+      color: var(--text-color);
+    }
+
+    .return-button i {
+      margin-right: 6px;
     }
 
     /* Responsividade para o formulário */
@@ -310,121 +342,112 @@
   </div>
 
   <script>
-    // URL da API - **ATENÇÃO: Você precisará atualizar esta URL para a API que salva dados do usuário**
-    // A API atual (5fyex1o1ec...) parece ser apenas para texto.
-    // Para incluir nome e foto, você precisará de uma nova API ou modificar a existente.
+    // URL da API - atualize para a sua API que salva nome, foto e texto
     const API_URL = "https://5fyex1o1ec.execute-api.sa-east-1.amazonaws.com/postit-api";
     const MAX_CHARS = 100;
-
-    // Configuração do contador de caracteres
+  
     const textoInput = document.getElementById('texto');
     const charCount = document.querySelector('.char-count');
     const postitForm = document.getElementById('postit-form');
     const loginMessage = document.getElementById('loginMessage');
-
-    // Listener para atualizar o contador de caracteres
+  
+    // Atualiza contador de caracteres
     textoInput.addEventListener('input', () => {
       const currentLength = textoInput.value.length;
       charCount.textContent = `${currentLength}/${MAX_CHARS}`;
     });
-
-    // Função para carregar os post-its
+  
+    // Carrega post-its da API
     async function carregarPostits() {
       try {
-        // **ATENÇÃO: Esta API (5fyex1o1ec...) só retorna o texto.**
-        // Para exibir nome e foto, sua API precisará retornar esses dados.
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error("Erro ao buscar post-its");
-        const postits = await res.json(); // Supondo que cada post-it no array tenha { texto, name, picture }
+        const postits = await res.json();
+  
+        // Ordena do mais recente para o mais antigo (supondo que tenha id numérico)
+        postits.sort((a, b) => b.id - a.id);
+  
         const container = document.getElementById('postits');
         container.innerHTML = '';
-        // Inverte a ordem para mostrar os mais recentes primeiro (opcional)
-        postits.reverse().forEach(p => {
+  
+        postits.forEach(p => {
           const div = document.createElement('div');
           div.className = 'postit';
-          // Adiciona o conteúdo e as informações do autor
           div.innerHTML = `
             <div class="postit-content">
-                <p>${p.texto}</p>
+              <p>${p.texto}</p>
             </div>
             <div class="postit-author">
-                <img src="${p.picture}" alt="${p.name}" />
-                <span>${p.name}</span>
+              <img src="${p.picture}" alt="${p.name}" />
+              <span>${p.name}</span>
             </div>
           `;
           container.appendChild(div);
         });
       } catch (e) {
         console.error("Erro ao carregar post-its:", e);
-        // alert("Não foi possível carregar os post-its.");
       }
     }
-
-    // Função para verificar o estado do login e mostrar/ocultar o formulário
+  
+    // Verifica estado do login para mostrar formulário ou mensagem
     function checkLoginState() {
       const userData = localStorage.getItem('userData');
       if (userData) {
-        postitForm.style.display = 'flex'; // Mostra o formulário
-        loginMessage.style.display = 'none'; // Oculta a mensagem de login
+        postitForm.style.display = 'flex';
+        loginMessage.style.display = 'none';
       } else {
-        postitForm.style.display = 'none'; // Oculta o formulário
-        loginMessage.style.display = 'block'; // Mostra a mensagem de login
+        postitForm.style.display = 'none';
+        loginMessage.style.display = 'block';
       }
     }
-
-    // Listener do formulário de envio
-    document.getElementById('postit-form').addEventListener('submit', async e => {
+  
+    // Envio do formulário
+    postitForm.addEventListener('submit', async e => {
       e.preventDefault();
-
+  
       const userData = localStorage.getItem('userData');
       if (!userData) {
         alert("Você precisa estar logado para publicar um post-it.");
-        return; // Interrompe a submissão se não estiver logado
+        return;
       }
-
+  
       const user = JSON.parse(userData);
-      const texto = document.getElementById('texto').value.trim();
-
+      const texto = textoInput.value.trim();
+  
       if (!texto) return alert("Digite algo.");
       if (texto.length > MAX_CHARS) return alert(`O texto não pode ter mais que ${MAX_CHARS} caracteres.`);
-
+  
       try {
-        // **ATENÇÃO: Adapte a URL e o corpo da requisição para sua nova API**
-        // Esta requisição precisa enviar { texto, name, picture, email }
-        const res = await fetch(API_URL, { // Altere API_URL para a URL da sua nova API
+        const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             texto: texto,
             name: user.name,
             picture: user.picture,
-            email: user.email // É bom enviar o email para identificação única na API/BD
+            email: user.email
           })
         });
-
+  
         if (!res.ok) throw new Error("Erro ao criar post-it");
-
-        document.getElementById('texto').value = '';
+  
+        textoInput.value = '';
         charCount.textContent = '0/100';
-        // Recarrega os post-its APENAS após o envio bem-sucedido
         carregarPostits();
       } catch (e) {
         console.error("Erro ao enviar post-it:", e);
         alert("Não foi possível publicar o post-it. Tente novamente.");
       }
     });
-
-    // Carrega os post-its ao iniciar a página
+  
+    // Inicializa
     carregarPostits();
-    // Verifica o estado do login ao carregar a página
     checkLoginState();
-
-    // Adiciona um listener para mudanças no localStorage (útil se o usuário abrir postit.html em outra aba)
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'userData') {
-        checkLoginState(); // Re-verifica o estado do login se os dados do usuário mudarem
-      }
+  
+    // Atualiza estado se mudar no localStorage (outras abas)
+    window.addEventListener('storage', e => {
+      if (e.key === 'userData') checkLoginState();
     });
-  </script>
+  </script>  
 </body>
 </html>
