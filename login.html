@@ -225,24 +225,33 @@
 
     <script>
         function handleCredentialResponse(response) {
+            console.log('Iniciando processo de login...');
             const loading = document.getElementById('loading');
             loading.classList.add('active');
             
-            // Decodifica o token JWT
-            const responsePayload = jwt_decode(response.credential);
-            
-            // Salva os dados do usuário no localStorage
-            const userData = {
-                name: responsePayload.name,
-                email: responsePayload.email,
-                picture: responsePayload.picture
-            };
-            localStorage.setItem('userData', JSON.stringify(userData));
-            
-            // Redireciona para a página inicial após um breve delay
-            setTimeout(() => {
+            try {
+                // Decodifica o token JWT
+                const responsePayload = jwt_decode(response.credential);
+                console.log('Token decodificado com sucesso:', responsePayload);
+                
+                // Salva os dados do usuário no localStorage
+                const userData = {
+                    name: responsePayload.name,
+                    email: responsePayload.email,
+                    picture: responsePayload.picture
+                };
+                localStorage.setItem('userData', JSON.stringify(userData));
+                console.log('Dados do usuário salvos no localStorage');
+                
+                // Remove o loading e redireciona
+                loading.classList.remove('active');
+                console.log('Redirecionando para a página inicial...');
                 window.location.href = 'index.html';
-            }, 1000);
+            } catch (error) {
+                console.error('Erro durante o processo de login:', error);
+                loading.classList.remove('active');
+                alert('Ocorreu um erro durante o login. Por favor, tente novamente.');
+            }
         }
 
         function handleSignOut() {
