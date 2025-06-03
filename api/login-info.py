@@ -3,41 +3,47 @@ import boto3
 from datetime import datetime
 import os
 
-# Inicializa o cliente do DynamoDB
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
 def lambda_handler(event, context):
     try:
-        # Obtém os dados do corpo da requisição
-        body = json.loads(event['body'])
-        
-        # Extrai os dados do usuário
+        if 'body' in event and isinstance(event['body'], str):
+            body = json.loads(event['body'])
+        elif 'body' in event and isinstance(event['body'], dict):
+            body = event['body']
+        else:
+            body = event
+
+        if not all(k in body for k in ('email', 'name', 'picture')):
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'error': 'Campos obrigatórios: email, name, picture'})
+            }
+
         user_data = {
-            'email': body['email'],  # Chave primária
+            'email': body['email'],
             'name': body['name'],
             'picture': body['picture'],
-            'last_login': datetime.now().isoformat(),
-            'login_count': 1  # Será incrementado se o usuário já existir
+            'last_login': datetime.now().isoformat()
         }
-        
-        # Tenta atualizar o item existente
-        try:
-            response = table.update_item(
-                Key={'email': user_data['email']},
-                UpdateExpression='SET name = :name, picture = :picture, last_login = :last_login, login_count = login_count + :inc',
-                ExpressionAttributeValues={
-                    ':name': user_data['name'],
-                    ':picture': user_data['picture'],
-                    ':last_login': user_data['last_login'],
-                    ':inc': 1
-                },
-                ReturnValues='UPDATED_NEW'
-            )
-        except dynamodb.meta.client.exceptions.ResourceNotFoundException:
-            # Se o usuário não existir, cria um novo
-            table.put_item(Item=user_data)
-        
+
+        table.update_item(
+            Key={'email': user_data['email']},
+            UpdateExpression='SET #n = :name, picture = :picture, last_login = :last_login, login_count = if_not_exists(login_count, :zero) + :inc',
+            ExpressionAttributeNames={
+                '#n': 'name'
+            },
+            ExpressionAttributeValues={
+                ':name': user_data['name'],
+                ':picture': user_data['picture'],
+                ':last_login': user_data['last_login'],
+                ':inc': 1,
+                ':zero': 0
+            },
+            ReturnValues='UPDATED_NEW'
+        )
+
         return {
             'statusCode': 200,
             'headers': {
@@ -50,7 +56,7 @@ def lambda_handler(event, context):
                 'user': user_data
             })
         }
-        
+
     except Exception as e:
         return {
             'statusCode': 500,
@@ -59,7 +65,5 @@ def lambda_handler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Methods': 'POST,OPTIONS'
             },
-            'body': json.dumps({
-                'error': str(e)
-            })
-        } 
+            'body': json.dumps({'error': str(e)})
+        }

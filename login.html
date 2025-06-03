@@ -183,6 +183,14 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .google-button-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            max-width: 300px;
+            margin: 1rem auto;
+        }
     </style>
 </head>
 <body>
@@ -197,28 +205,35 @@
         <div class="login-card">
             <p>Entre com sua conta Google para acessar recursos exclusivos do site.</p>
             
-            <div id="g_id_onload"
-                data-client_id="220111594605-p3bo17d7udf40sfuvvi112ol6t7etgrq.apps.googleusercontent.com"
-                data-callback="handleCredentialResponse">
-            </div>
-            <div class="g_id_signin" data-type="standard"></div>
-
-            <div class="loading" id="loading">
-                <div class="loading-spinner"></div>
-            </div>
-
-            <div class="login-info" id="loginInfo">
-                <div class="user-info">
-                    <img src="" alt="Avatar" class="user-avatar" id="userAvatar">
-                    <div class="user-details">
-                        <div class="user-name" id="userName"></div>
-                        <div class="user-email" id="userEmail"></div>
+            <div class="login-form">
+                <h2>Entrar</h2>
+                <div id="loading" class="loading-spinner"></div>
+                <div id="loginInfo" class="user-info">
+                    <!-- Informações do usuário serão carregadas aqui -->
+                </div>
+                
+                <div class="google-button-container">
+                    <div id="g_id_onload"
+                         data-client_id="220111594605-p3bo17d7udf40sfuvvi112ol6t7etgrq.apps.googleusercontent.com"
+                         data-callback="handleCredentialResponse"
+                         data-auto_prompt="false">
+                    </div>
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-size="large"
+                         data-theme="outline"
+                         data-text="sign_in_with"
+                         data-shape="rectangular"
+                         data-logo_alignment="left">
                     </div>
                 </div>
-                <button class="logout-button" onclick="handleSignOut()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Sair
-                </button>
+                
+                <!-- Você pode adicionar um formulário de login tradicional aqui se necessário -->
+                <!--
+                <input type="text" placeholder="Usuário">
+                <input type="password" placeholder="Senha">
+                <button type="submit">Entrar</button>
+                -->
             </div>
         </div>
     </div>
