@@ -57,7 +57,18 @@
     header {
         text-align: center;
         padding: 4rem 0;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    #headerCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
     }
 
     h1 {
@@ -65,12 +76,16 @@
         margin: 0;
         color: var(--text-color);
         text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 2;
     }
 
     .subtitle {
         font-size: 1.5em;
         margin-top: 1rem;
         color: rgba(255,255,255,0.9);
+        position: relative;
+        z-index: 2;
     }
 
     .section {
@@ -754,6 +769,7 @@
 </head>
 <body>
     <header>
+        <canvas id="headerCanvas"></canvas>
         <h1>MBernard</h1>
         <div class="subtitle">Desenvolvedor Full Stack</div>
     </header>
@@ -1131,6 +1147,142 @@
         window.addEventListener('load', checkLoginState);
 
         // Adiciona um listener para mudanças no localStorage
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'userData') {
+                checkLoginState();
+            }
+        });
+
+        // Script para a animação no canvas
+        const header = document.querySelector('header');
+        const canvas = document.getElementById('headerCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let shapes = []; // Array para armazenar as formas
+        let lastSpawnTime = 0; // Controle do tempo do último spawn
+        const spawnInterval = 100; // Intervalo entre spawns em milissegundos
+        const maxShapes = 150; // Número máximo de formas na tela
+
+        // Função para redimensionar o canvas
+        function resizeCanvas() {
+            const headerRect = header.getBoundingClientRect();
+            canvas.width = headerRect.width;
+            canvas.height = headerRect.height;
+        }
+
+        // Função para criar uma única forma
+        function createShape() {
+            const spawnAreaPercentage = 0.4; // 40% da área central
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Posiciona a forma aleatoriamente na área central
+            const x = centerX + (Math.random() - 0.5) * canvas.width * spawnAreaPercentage;
+            const y = centerY + (Math.random() - 0.5) * canvas.height * spawnAreaPercentage;
+
+            const size = Math.random() * 6 + 2; // Tamanho (2 a 8)
+            const depth = Math.random() * Math.random(); // Profundidade
+
+            // Calcula o vetor de direção
+            const { vx, vy } = getDirectionVector(x, y, centerX, centerY);
+
+            return {
+                x: x,
+                y: y,
+                size: size,
+                depth: depth,
+                opacity: (1 - depth) * 0.6 + 0.2,
+                color: `rgba(255, 255, 255, ${(1 - depth) * 0.3 + 0.1})`,
+                vx: vx,
+                vy: vy,
+                baseSpeed: (1 - depth) * 2 + 0.5
+            };
+        }
+
+        // Função para calcular o vetor de direção
+        function getDirectionVector(shapeX, shapeY, centerX, centerY) {
+            const dx = shapeX - centerX;
+            const dy = shapeY - centerY;
+            const magnitude = Math.sqrt(dx * dx + dy * dy);
+
+            if (magnitude === 0) {
+                const defaultDx = 1;
+                const defaultDy = 1;
+                const defaultMagnitude = Math.sqrt(defaultDx * defaultDx + defaultDy * defaultDy);
+                return { vx: defaultDx / defaultMagnitude, vy: defaultDy / defaultMagnitude };
+            }
+
+            return { vx: dx / magnitude, vy: dy / magnitude };
+        }
+
+        // Função para desenhar o gradiente de fundo
+        function drawBackgroundGradient() {
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+            const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim();
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, primaryColor);
+            gradient.addColorStop(1, secondaryColor);
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Função para desenhar uma forma
+        function drawShape(shape) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${shape.opacity})`;
+            const adjustedSize = shape.size * (1 - shape.depth * 0.5);
+            ctx.fillRect(shape.x - adjustedSize / 2, shape.y - adjustedSize / 2, adjustedSize, adjustedSize);
+        }
+
+        // Loop de animação principal
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+
+            // Lógica de spawn gradual
+            if (currentTime - lastSpawnTime > spawnInterval && shapes.length < maxShapes) {
+                shapes.push(createShape());
+                lastSpawnTime = currentTime;
+            }
+
+            // Desenha o fundo
+            drawBackgroundGradient();
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const maxDistance = Math.max(centerX, centerY) * 1.8;
+
+            // Atualiza e desenha cada forma
+            shapes = shapes.filter(shape => {
+                // Move a forma
+                shape.x += shape.vx * shape.baseSpeed;
+                shape.y += shape.vy * shape.baseSpeed;
+
+                // Calcula a distância do centro
+                const distanceToCenter = Math.sqrt(
+                    Math.pow(shape.x - centerX, 2) + Math.pow(shape.y - centerY, 2)
+                );
+
+                // Se a forma estiver muito longe, remove ela
+                if (distanceToCenter > maxDistance) {
+                    return false; // Remove a forma
+                }
+
+                // Desenha a forma
+                drawShape(shape);
+                return true; // Mantém a forma
+            });
+        }
+
+        // Inicialização
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        requestAnimationFrame(animate);
+
+        // Verifica o estado do login quando a página carrega
+        window.addEventListener('load', checkLoginState);
+
+        // Adiciona um listener para mudanças no localStorage (útil se o usuário abrir index.html em outra aba)
         window.addEventListener('storage', function(e) {
             if (e.key === 'userData') {
                 checkLoginState();
