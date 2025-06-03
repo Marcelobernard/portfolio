@@ -328,79 +328,36 @@
       charCount.textContent = `${currentLength}/${MAX_CHARS}`;
     });
 
-    // Função para carregar os post-its da API
+    // Função para carregar os post-its
     async function carregarPostits() {
       try {
-        // **ATENÇÃO: Sua API precisa retornar um campo com o ID (ex: 'id')**
+        // **ATENÇÃO: Esta API (5fyex1o1ec...) só retorna o texto.**
+        // Para exibir nome e foto, sua API precisará retornar esses dados.
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error("Erro ao buscar post-its");
-        allPostits = await res.json(); // Armazena os post-its no array global
-
-        // Supondo que cada post-it no array tenha { id, texto, name, picture }
-        // Não precisamos mais converter para Date se usarmos o ID para ordenação
-
-        // Renderiza os post-its, ordenando pelo mais recente (maior ID) por padrão
-        renderPostits('recent');
-
-      } catch (e) {
-        console.error("Erro ao carregar post-its:", e);
-        // alert("Não foi possível carregar os post-its.");
-      }
-    }
-
-    // Função para renderizar os post-its no DOM com base na ordenação
-    function renderPostits(sortOrder) {
-        let sortedPostits = [...allPostits]; // Cria uma cópia para não modificar o array original
-
-        if (sortOrder === 'recent') {
-            // Ordena do mais recente para o mais antigo (maior ID para menor ID)
-            // Assume que o ID é numérico ou uma string que pode ser comparada como tal
-            sortedPostits.sort((a, b) => {
-                // Converte para número para garantir ordenação correta, caso sejam strings
-                const idA = parseInt(a.id, 10);
-                const idB = parseInt(b.id, 10);
-                if (isNaN(idA) || isNaN(idB)) {
-                     console.warn("ID não numérico encontrado. A ordenação pode não funcionar corretamente.", a, b);
-                     // Fallback para ordenação por texto ou outra coisa se ID não for numérico
-                     return 0; // Não altera a ordem original para IDs inválidos
-                }
-                return idB - idA; // Ordem decrescente (mais recente primeiro)
-            });
-            sortRecentButton.classList.add('active');
-            sortOldestButton.classList.remove('active');
-        } else if (sortOrder === 'oldest') {
-            // Ordena do mais antigo para o mais recente (menor ID para maior ID)
-             sortedPostits.sort((a, b) => {
-                const idA = parseInt(a.id, 10);
-                const idB = parseInt(b.id, 10);
-                 if (isNaN(idA) || isNaN(idB)) {
-                     console.warn("ID não numérico encontrado. A ordenação pode não funcionar corretamente.", a, b);
-                     return 0; // Não altera a ordem original para IDs inválidos
-                }
-                return idA - idB; // Ordem crescente (mais antigo primeiro)
-            });
-            sortOldestButton.classList.add('active');
-            sortRecentButton.classList.remove('active');
-        }
-
-        postitsContainer.innerHTML = ''; // Limpa o container atual
-
-        // Cria e adiciona os elementos HTML para cada post-it ordenado
-        sortedPostits.forEach(p => {
+        const postits = await res.json(); // Supondo que cada post-it no array tenha { texto, name, picture }
+        const container = document.getElementById('postits');
+        container.innerHTML = '';
+        // Inverte a ordem para mostrar os mais recentes primeiro (opcional)
+        postits.reverse().forEach(p => {
           const div = document.createElement('div');
           div.className = 'postit';
-           // Adiciona o conteúdo e as informações do autor
+          // Adiciona o conteúdo e as informações do autor
           div.innerHTML = `
             <div class="postit-content">
                 <p>${p.texto}</p>
             </div>
             <div class="postit-author">
-                <img src="${p.picture || 'placeholder-avatar.png'}" alt="${p.name || 'Usuário Anônimo'}" />
-                <span>${p.name || 'Usuário Anônimo'}</span>
+                <img src="${p.picture}" alt="${p.name}" />
+                <span>${p.name}</span>
             </div>
           `;
-          postitsContainer.appendChild(div);
+          container.appendChild(div);
         });
+      } catch (e) {
+        console.error("Erro ao carregar post-its:", e);
+        // alert("Não foi possível carregar os post-its.");
+      }
     }
 
     // Função para verificar o estado do login e mostrar/ocultar o formulário
