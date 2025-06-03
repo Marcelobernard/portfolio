@@ -1160,7 +1160,7 @@
 
         let shapes = []; // Array para armazenar as formas
         let lastSpawnTime = 0; // Controle do tempo do último spawn
-        const spawnInterval = 100; // Intervalo entre spawns em milissegundos
+        const spawnInterval = 70; // Intervalo entre spawns em milissegundos
         const maxShapes = 150; // Número máximo de formas na tela
 
         // Função para redimensionar o canvas
@@ -1172,7 +1172,7 @@
 
         // Função para criar uma única forma
         function createShape() {
-            const spawnAreaPercentage = 0.4; // 40% da área central
+            const spawnAreaPercentage = 0.8; // 40% da área central
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
 
