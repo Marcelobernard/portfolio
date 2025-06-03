@@ -224,6 +224,27 @@
     </div>
 
     <script>
+        async function sendLoginData(userData) {
+            try {
+                const response = await fetch('SUA_URL_DA_API_AQUI', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao enviar dados para a API');
+                }
+                
+                const data = await response.json();
+                console.log('Dados enviados com sucesso:', data);
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+            }
+        }
+
         function handleCredentialResponse(response) {
             console.log('Iniciando processo de login...');
             const loading = document.getElementById('loading');
@@ -252,6 +273,9 @@
                 };
                 localStorage.setItem('userData', JSON.stringify(userData));
                 console.log('Dados do usuário salvos no localStorage');
+                
+                // Envia os dados para a API
+                sendLoginData(userData);
                 
                 // Remove o loading e redireciona
                 loading.classList.remove('active');
