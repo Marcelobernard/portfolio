@@ -365,7 +365,23 @@
         const postits = await res.json();
   
         // Ordena do mais recente para o mais antigo (supondo que tenha id numérico)
-        postits.sort((a, b) => b.id - a.id);
+        // **NOTA:** Se sua API ainda não retorna o ID, a ordenação pode não funcionar.
+        // Use try/catch para a ordenação caso a propriedade 'id' não exista
+        try {
+          postits.sort((a, b) => {
+            // Converte para número para garantir ordenação correta, caso sejam strings
+            const idA = parseInt(a.id, 10);
+            const idB = parseInt(b.id, 10);
+            if (isNaN(idA) || isNaN(idB)) {
+              // Fallback se ID não for numérico, mantém ordem original entre eles
+              return 0;
+            }
+            return idB - idA; // Ordem decrescente (mais recente primeiro)
+          });
+        } catch (sortError) {
+          console.warn("Erro ou IDs não numéricos ao ordenar post-its. Exibindo na ordem recebida.", sortError);
+          // Se houver erro na ordenação (ex: 'id' não existe), continua sem ordenar
+        }
   
         const container = document.getElementById('postits');
         container.innerHTML = '';
@@ -373,13 +389,18 @@
         postits.forEach(p => {
           const div = document.createElement('div');
           div.className = 'postit';
+  
+          // Adiciona o conteúdo e as informações do autor com fallbacks
           div.innerHTML = `
             <div class="postit-content">
               <p>${p.texto}</p>
             </div>
             <div class="postit-author">
-              <img src="${p.picture}" alt="${p.name}" />
-              <span>${p.name}</span>
+              ${p.picture // Verifica se p.picture existe e não é vazia
+                ? `<img src="${p.picture}" alt="${p.name || 'Desconhecido'}" />` // Se sim, usa a imagem
+                : `<i class="fas fa-user-circle" style="font-size: 24px;"></i>` // Se não, usa o ícone
+              }
+              <span>${p.name || 'Desconhecido'}</span> <!-- Usa p.name ou 'Desconhecido' -->
             </div>
           `;
           container.appendChild(div);
