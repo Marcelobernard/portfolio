@@ -230,9 +230,19 @@
             loading.classList.add('active');
             
             try {
+                // Verifica se a resposta é válida
+                if (!response || !response.credential) {
+                    throw new Error('Resposta do Google inválida: ' + JSON.stringify(response));
+                }
+
                 // Decodifica o token JWT
                 const responsePayload = jwt_decode(response.credential);
                 console.log('Token decodificado com sucesso:', responsePayload);
+                
+                // Verifica se os dados necessários estão presentes
+                if (!responsePayload.name || !responsePayload.email || !responsePayload.picture) {
+                    throw new Error('Dados do usuário incompletos: ' + JSON.stringify(responsePayload));
+                }
                 
                 // Salva os dados do usuário no localStorage
                 const userData = {
@@ -250,7 +260,7 @@
             } catch (error) {
                 console.error('Erro durante o processo de login:', error);
                 loading.classList.remove('active');
-                alert('Ocorreu um erro durante o login. Por favor, tente novamente.');
+                alert('Erro durante o login: ' + error.message + '\n\nPor favor, tente novamente.');
             }
         }
 

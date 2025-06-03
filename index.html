@@ -1129,6 +1129,13 @@
 
         // Verifica o estado do login quando a página carrega
         window.addEventListener('load', checkLoginState);
+
+        // Adiciona um listener para mudanças no localStorage
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'userData') {
+                checkLoginState();
+            }
+        });
     </script>
 </body>
 </html>
